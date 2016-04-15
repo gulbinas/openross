@@ -5,7 +5,7 @@ from errors import NoDataInS3Error
 from utils import time_on_statsd, statsd_name
 from txaws.service import AWSServiceRegion
 from txaws.regions import S3_EU_WEST
-import boto
+import boto3
 import settings
 import logging
 
@@ -15,9 +15,10 @@ class S3Downloader(object):
 
     def __init__(self, engine):
         self.engine = engine
-        self.s3conn = boto.connect_s3(
+        self.s3conn = boto3.Session(
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_REGION
         )
         if not settings.USE_BOTO:
             self.txs3conn = AWSServiceRegion(
@@ -25,7 +26,7 @@ class S3Downloader(object):
                 secret_key=settings.AWS_SECRET_ACCESS_KEY,
                 s3_uri=S3_EU_WEST[0]['endpoint'],
             ).get_s3_client()
-        self.botobucket = self.s3conn.get_bucket(settings.IMAGES_STORE)
+        self.s3resource = self.s3conn.resource('s3')
 
     @defer.inlineCallbacks
     def _get_data_from_s3_tx(self, path):
@@ -38,9 +39,8 @@ class S3Downloader(object):
 
     def _get_data_from_s3(self, path):
         """ boto GET from S3 """
-        key = self.botobucket.get_key(path)
-        data = key.get_contents_as_string()
-        return data
+        data = self.s3resource.Object(settings.IMAGES_STORE, path).get()
+        return data['Body'].read()
 
     @time_on_statsd(statsd_name(), 's3_downloader')
     def process_image(self, payload,  **kwargs):

@@ -25,7 +25,7 @@ setup(
         'txaws==0.2.3',
         'zope.interface==4.0.5',
         'pgmagick==0.5.7',
-        'boto==2.9.0',
+        'boto3==1.2.3',
         'raven==3.3.6',
         'pyopenssl==0.13.1',
         'python-statsd==1.6.0',
