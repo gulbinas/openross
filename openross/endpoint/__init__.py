@@ -126,9 +126,9 @@ class BobRossEndpoint(resource.Resource):
             return server.NOT_DONE_YET
 
         # Ensure image is a jpeg that is being requested
-        if '.jpeg' not in request.path and '.jpg' not in request.path:
-            request.setResponseCode(403)
-            return ''
+        #if '.jpeg' not in request.path and '.jpg' not in request.path:
+        #    request.setResponseCode(403)
+        #    return ''
 
         d = self._process_image(image_path, width, height, mode, **request.args)
         d.addCallback(on_finish, request)
