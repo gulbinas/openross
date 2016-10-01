@@ -24,16 +24,17 @@ class Resizer(object):
         img.filterType(pg.FilterTypes.LanczosFilter)
 
         img = process_image_with_mode(img, width, height, mode)
+	
 
+	if width == '800':
+		if sbd_id in ["4398", "2456", "1976", "616", "536"]:
+		    layer = Image('/home/ubuntu/{}.png'.format(sbd_id))
+		else:
+		    layer = Image('/home/ubuntu/DEFAULT.png')
 
-        if sbd_id in ["4398", "2456", "1976", "616", "536"]:
-            layer = Image('/home/ubuntu/{}.png'.format(sbd_id))
-        else:
-            layer = Image('/home/ubuntu/DEFAULT.png')
+		layer = process_image_with_mode(layer, width, height, mode)
 
-        layer = process_image_with_mode(layer, width, height, mode)
-
-        img.composite(layer, 0, 0, co.OverCompositeOp)
+		img.composite(layer, 0, 0, co.OverCompositeOp)
 
         # Image should be repaged after a crop/resize
         img.page(pg.Geometry(0, 0, 0, 0))
